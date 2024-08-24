@@ -22,6 +22,7 @@ public class ModulesClientCoreProperties {
      */
     @Data
     public static class KeycloakProperties {
+        private String url;
         private String clientId;
         private String clientSecret;
         private String scope;

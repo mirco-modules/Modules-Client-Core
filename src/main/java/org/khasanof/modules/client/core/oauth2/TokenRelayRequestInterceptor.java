@@ -2,7 +2,6 @@ package org.khasanof.modules.client.core.oauth2;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import org.khasanof.modules.client.core.oauth2.AuthorizationHeaderUtil;
 
 import java.util.Optional;
 

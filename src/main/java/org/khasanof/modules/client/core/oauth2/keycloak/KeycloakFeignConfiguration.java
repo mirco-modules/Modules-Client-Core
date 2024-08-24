@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * @author Nurislom
- * @see org.khasanof.modules.client.core.keycloak
+ * @see org.khasanof.modules.client.core.oauth2.keycloak
  * @since 5/7/2024 2:53 PM
  */
 public class KeycloakFeignConfiguration {

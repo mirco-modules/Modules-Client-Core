@@ -10,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.core.http.converter.OAuth2AccessTokenResponseHttpMessageConverter;
@@ -22,7 +23,7 @@ import java.util.Optional;
 
 /**
  * @author Nurislom
- * @see org.khasanof.modules.client.core.keycloak
+ * @see org.khasanof.modules.client.core.oauth2.keycloak
  * @since 5/7/2024 2:54 PM
  */
 @SuppressWarnings("rawtypes")
@@ -30,15 +31,6 @@ public class KeycloakInterceptor implements RequestInterceptor {
 
     public static final String AUTHORIZATION = "Authorization";
     public static final String CONNECT_TOKEN = "/protocol/openid-connect/token";
-
-    @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri:default}")
-    private String issuerUri;
-
-    @Value("${spring.security.oauth2.client.registration.oidc.client-id:default}")
-    private String clientId;
-
-    @Value("${spring.security.oauth2.client.registration.oidc.client-secret:default}")
-    private String clientSecret;
 
     private final RestTemplate restTemplate;
     private final ModulesClientCoreProperties.KeycloakProperties keycloakProperties;
@@ -56,7 +48,7 @@ public class KeycloakInterceptor implements RequestInterceptor {
 
     private RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder
-            .additionalMessageConverters(new FormHttpMessageConverter(), new OAuth2AccessTokenResponseHttpMessageConverter())
+            .additionalMessageConverters(new FormHttpMessageConverter(), new OAuth2AccessTokenResponseHttpMessageConverter(), new MappingJackson2HttpMessageConverter())
             .errorHandler(new OAuth2ErrorResponseErrorHandler())
             .build();
     }
@@ -70,15 +62,15 @@ public class KeycloakInterceptor implements RequestInterceptor {
 
     private RequestEntity getRequestEntity() {
         return RequestEntity
-            .post(URI.create(issuerUri + CONNECT_TOKEN))
+            .post(URI.create(keycloakProperties.getUrl() + CONNECT_TOKEN))
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .body(formParameters());
     }
 
     private MultiValueMap<String, String> formParameters() {
         MultiValueMap<String, String> formParameters = new LinkedMultiValueMap<>();
-        formParameters.add(OAuth2ParameterNames.CLIENT_ID, clientId);
-        formParameters.add(OAuth2ParameterNames.CLIENT_SECRET, clientSecret);
+        formParameters.add(OAuth2ParameterNames.CLIENT_ID, keycloakProperties.getClientId());
+        formParameters.add(OAuth2ParameterNames.CLIENT_SECRET, keycloakProperties.getClientSecret());
         formParameters.add(OAuth2ParameterNames.SCOPE, keycloakProperties.getScope());
         formParameters.add(OAuth2ParameterNames.USERNAME, keycloakProperties.getUsername());
         formParameters.add(OAuth2ParameterNames.PASSWORD, keycloakProperties.getPassword());
