@@ -1,0 +1,1 @@
+package org.khasanof.modules.client.core;
